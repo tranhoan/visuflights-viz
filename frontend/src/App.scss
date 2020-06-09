@@ -1,0 +1,71 @@
+$font-color: #E8E8E8;
+
+html {
+    height: 100%;
+    body {
+        background: #28282D;
+        margin: 0;
+        font-family: 'Mongolian Baiti',sans-serif;
+        letter-spacing: 3px;
+
+        header {
+            padding: 1.5rem 0 2rem;
+            width: 100%;
+            height: 2rem;
+            opacity: 1;
+            font-size: 1.1rem;
+            color: $font-color;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .logo {
+                margin-left: 81px;
+                height: 2.7rem;
+            }
+            .right-column {
+               display: flex;
+               margin-right: 81px;
+
+               div {
+                   padding-left: 90px;
+               }
+            }
+        }
+        
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+
+            .test {
+                background: white;
+                position: absolute;
+                height: 3px;
+                width: 3px;
+                // transform: translate3d(165.644287109375px, 174.80142211914062px, 0);
+            }
+
+            .map-wrapper {
+                height: 100vh;
+                width: 100vw;
+                position: relative;
+                .svg {
+                    position: absolute;
+                
+                    color: white;
+                    filter: invert(65%) sepia(0%) saturate(432%) hue-rotate(139deg) brightness(90%) contrast(90%);
+                }
+
+
+                canvas {
+                    position: absolute;
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
