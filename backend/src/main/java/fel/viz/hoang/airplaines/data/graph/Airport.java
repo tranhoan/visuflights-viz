@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class Airport {
     
-    static final double X_LOWER_BOUND = -688.16667, X_UPPER_BOUND = -1242.5, Y_LOWER_BOUND = -245.5, Y_UPPER_BOUND = -488.0;
+    static final double X_UPPER_BOUND = -688.16667, X_LOWER_BOUND = -1242.5, Y_UPPER_BOUND = -245.5, Y_LOWER_BOUND = -488.0;
     static final int MIN_AIRPORT_SIZE = 2, MAX_AIRPORT_SIZE = 258;
     
     private double x, y, relativeX, relativeY;
@@ -30,8 +30,8 @@ public class Airport {
         this.abbreviation = this.tooltip.substring(0, 3);
         this.arrivals = new ArrayList<>();
         this.departures = new ArrayList<>();
-        this.relativeX = (this.x - X_UPPER_BOUND)/(X_LOWER_BOUND - X_UPPER_BOUND);
-        this.relativeY = (this.y - Y_UPPER_BOUND)/(Y_LOWER_BOUND - Y_UPPER_BOUND);
+        this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
+        this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
     }
 
     public double getX() {

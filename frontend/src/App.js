@@ -5,7 +5,7 @@ import Header from './Components/Header';
 
 function App() {
   return (
-    <React.Fragment id="root">
+    <React.Fragment>
       <Header/>
       <div className="content">
         <MainPage/>

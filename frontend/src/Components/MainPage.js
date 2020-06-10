@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef, createRef} from 'react';
 import axios from 'axios';
 import Map from './Map';
 import useTransform from '../Hooks/useTransform';
@@ -13,29 +13,51 @@ function MainPage() {
     const xUpperRef = useRef()
     const yUpperRef = useRef()
     const yLowerRef = useRef()
-    const airportRef = useRef()
+    const [airportRef, setAirportRef] = useState([])
 
     useTransform(xLowerBound, xLowerRef)
     useTransform(xUpperBound, xUpperRef)
     useTransform(yUpperBound, yUpperRef)
     useTransform(yLowerBound, yLowerRef)
-    // useEffect(() => {
-    //     axios.get('http://localhost:8080/data')
-    //     .then(
-    //         res => {
-    //             console.log(res)
-    //         }
-    //     )
-    //     .catch(err => console.log(err))
-    // }, [])
-    useEffect(() => {
-        const x = -814.42222
-        const y = -409.16111
-        let cx = xLowerBound.x + ((x - -1242.5)/ (-688.16667 - -1242.5))* (xUpperBound.x-xLowerBound.x)
-        let cy = yUpperBound.y + ((y - -488.0)/ (-245.5 - -488)) * (yLowerBound.y - yUpperBound.y)*1.1
-        airportRef.current.style.transform = `translate3d(${cx}px, ${cy}px,0)`
-    }, [xLowerBound, xUpperBound, yLowerBound, yUpperBound])
 
+    useEffect(() => {
+        axios.get('http://localhost:8080/data')
+        .then(
+            res => {
+                console.log(res)
+                setAirports(res.data.airports)
+            }
+        )
+        .catch(err => console.log(err))
+    }, [])
+
+    useEffect(() => {
+        setAirportRef(oldRef => (
+            Array(airports.length).fill().map((e, i) => oldRef[i] || createRef())
+        ))
+    }, [airports])
+
+    useEffect(() => {
+        // const x = -934
+        // const y = -485.66667
+        // let cx = xLowerBound.x + (((x - -1242.5)/ (-688.16667 - -1242.5))* (xUpperBound.x-xLowerBound.x))
+        // let cy = yUpperBound.y + ((y - -488.0)/ (-245.5 - -488)) * (yLowerBound.y - yUpperBound.y)
+        // airportRef.current.style.transform = `translate3d(${cx}px, ${cy}px,0)`
+        let delay = 2.8
+        airports.forEach((airport, index) => {
+            let el = airportRef[index].current
+            const cx = Math.round(xLowerBound.x + (airport.relativeX*(xUpperBound.x - xLowerBound.x)))
+            const cy = Math.round(yUpperBound.y + (airport.relativeY*(yLowerBound.y - yUpperBound.y)+14))
+            el.style.transition = `opacity 0.5s ease-in-out ${delay}ms`
+            el.style.transform = `translate3d(${cx}px, ${cy}px,0)`
+            el.style.opacity = 1;
+            delay += 2.8
+        })
+        
+    }, [xLowerBound, xUpperBound, yLowerBound, yUpperBound, airportRef])
+
+
+const ap = airports.map((item,index) => <span ref={airportRef[index]} className="test ap" key={index}></span> )
     return (
         <React.Fragment>
             <div className="map-wrapper">
@@ -49,7 +71,7 @@ function MainPage() {
                 <span ref={xUpperRef} className="test"></span>
                 <span ref={yUpperRef} className="test"></span>
                 <span ref={yLowerRef} className="test"/>
-                <span ref={airportRef} className="test"></span>
+                {ap}
             </div>
         </React.Fragment>
     )

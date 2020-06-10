@@ -54,9 +54,27 @@ html {
                 position: relative;
                 .svg {
                     position: absolute;
-                
+                    fill-opacity: 0;
                     color: white;
                     filter: invert(65%) sepia(0%) saturate(432%) hue-rotate(139deg) brightness(90%) contrast(90%);
+
+                    path {
+                        fill:black;
+                        stroke-width: 0.6;
+                        stroke: #929292;
+                    }
+                }
+
+                .ap {
+                    width: .8rem;
+                    height: .8rem;
+                    border-radius: 50px;
+                    background: #FAFF81;
+                    border: none;
+                    box-shadow: 0 0 15px #FAFF81;
+                    transition: opacity 0.5s ease-in-out;
+                    transform: scale(0);
+                    opacity: 0;
                 }
 
 
