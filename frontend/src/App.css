@@ -72,6 +72,7 @@ html body .content .map-wrapper {
 
 html body .content .map-wrapper .svg {
   position: absolute;
+  fill: #28282D;
   fill-opacity: 0;
   color: white;
   -webkit-filter: invert(65%) sepia(0%) saturate(432%) hue-rotate(139deg) brightness(90%) contrast(90%);
@@ -101,7 +102,7 @@ html body .content .map-wrapper .ap {
 
 html body .content .map-wrapper canvas {
   position: absolute;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 /*# sourceMappingURL=App.css.map */

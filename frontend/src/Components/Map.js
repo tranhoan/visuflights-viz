@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useLayoutEffect } from 'react'
+import React, { useRef, useLayoutEffect } from 'react'
 
 const Map = props => {
     const xRef = useRef()
@@ -16,7 +16,6 @@ const Map = props => {
          props.setXUpper({x: upperx, y: uppery})
          props.setYUpper({x: upperyx, y: upperyy})
          props.setYLower({x: loweryx, y: loweryy})
-         console.log(yLowerBound.current.getBoundingClientRect())
       }
       window.addEventListener('resize', handleResize);
       handleResize()

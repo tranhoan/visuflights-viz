@@ -11,7 +11,8 @@ package fel.viz.hoang.airplaines.data.graph;
  */
 public class Point {
 
-    private double x, y, kP;
+    static final double X_UPPER_BOUND = -688.16667, X_LOWER_BOUND = -1242.5, Y_UPPER_BOUND = -245.5, Y_LOWER_BOUND = -488.0;
+    private double x, y, kP, relativeX, relativeY;
     private Point left, right;
     private final boolean isFixed;
 
@@ -31,6 +32,8 @@ public class Point {
             this.x = flight.getTarget().getX();
             this.y = flight.getTarget().getY();
         }
+        this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
+        this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
         this.kP = Graph.K / Math.sqrt(Math.pow(flight.getTarget().getX() - flight.getSource().getX(), 2) + Math.pow(flight.getTarget().getY() - flight.getSource().getY(), 2));
     }
 
@@ -41,6 +44,8 @@ public class Point {
         this.x = x_div + left.getX();
         this.y = y_div + left.getY();
         this.kP = left.kP;
+        this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
+        this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
     }
 
 //    public Point getLeft() {
@@ -54,6 +59,7 @@ public class Point {
 //    public Point getRight() {
 //        return right;
 //    }
+
 
     public void setRight(Point right) {
         this.right = right;
@@ -83,6 +89,19 @@ public class Point {
         this.y = y;
     }
 
-    
+    public double getRelativeX() {
+        return relativeX;
+    }
 
+    public void setRelativeX(double relativeX) {
+        this.relativeX = relativeX;
+    }
+
+    public double getRelativeY() {
+        return relativeY;
+    }
+
+    public void setRelativeY(double relativeY) {
+        this.relativeY = relativeY;
+    }
 }
