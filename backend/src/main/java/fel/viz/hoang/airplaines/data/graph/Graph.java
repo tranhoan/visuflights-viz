@@ -17,8 +17,8 @@ import org.w3c.dom.NodeList;
 public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
-    public static final double K = 0.01;
-    private static final double COMPABILITY_THRESHOLD = 0.003;
+    public static final double K = 0.1;
+    private static final double COMPABILITY_THRESHOLD = 0.005;
 
     public static double maxX, maxY;
 
@@ -86,7 +86,7 @@ public class Graph {
 
     private double[][] getCompabilityMatrix() {
         double[][] matrix = new double[NUMBER_OF_FLIGHTS][NUMBER_OF_FLIGHTS];
-        double cAngle, cScale, cPosition, cVisibility;
+        double cAngle, cScale, cPosition/*, cVisibility*/;
         double[] p = new double[2], q = new double[2], v = new double[2], i0 = new double[2], i1 = new double[2], iM = new double[2];
         double pSize, qSize, lAvg, distance, a, vPQ, vQP;
         int index;
@@ -109,6 +109,7 @@ public class Graph {
                     Point pPoint = flights[i].getPoints().get(index), qPoint = flights[j].getPoints().get(index);
                     distance = Math.sqrt(Math.pow(qPoint.getX() - pPoint.getX(), 2) + Math.pow(qPoint.getY() - pPoint.getY(), 2));
                     cPosition = lAvg / (lAvg + distance);
+                    /*
                     //cVisibility
                     v[0] = flights[j].getSource().getX() - flights[i].getSource().getX();
                     v[1] = flights[j].getSource().getY() - flights[i].getSource().getY();
@@ -133,7 +134,8 @@ public class Graph {
                     vPQ = Math.max((1 - (2 * (Math.sqrt(Math.pow(iM[0] - pPoint.getX(), 2) + Math.pow(iM[1] - pPoint.getY(), 2)))) / Math.sqrt(Math.pow(i1[0] - i0[0], 2) + Math.pow(i1[1] - i0[1], 2))), 0);
                     vQP = Math.max((1 - (2 * (Math.sqrt(Math.pow(iM[0] - qPoint.getX(), 2) + Math.pow(iM[1] - qPoint.getY(), 2)))) / Math.sqrt(Math.pow(i1[0] - i0[0], 2) + Math.pow(i1[1] - i0[1], 2))), 0);
                     cVisibility = Math.min(vPQ, vQP);
-                    matrix[i][j] = cAngle * cScale * cPosition * cVisibility;
+                    */
+                    matrix[i][j] = cAngle * cScale * cPosition /* cVisibility*/;
                 } else {
                     matrix[i][j] = 0;
                 }
