@@ -13,8 +13,6 @@ public class Point {
 
     static final double X_UPPER_BOUND = -688.16667, X_LOWER_BOUND = -1242.5, Y_UPPER_BOUND = -245.5, Y_LOWER_BOUND = -488.0;
     private double x, y, kP, relativeX, relativeY;
-    private Point left, right;
-    private final boolean isFixed;
 
     /**
      * Use only for creation of the first two points of any line (the two broder
@@ -24,7 +22,6 @@ public class Point {
      * @param number
      */
     public Point(Flight flight, int number) {
-        this.isFixed = true;
         if (number == 0) {
             this.x = flight.getSource().getX();
             this.y = flight.getSource().getY();
@@ -38,7 +35,6 @@ public class Point {
     }
 
     public Point(Flight fligth, Point left, Point right) {
-        this.isFixed = false;
         double x_div = (right.getX() - left.getX()) / 2;
         double y_div = (right.getY() - left.getY()) / 2;
         this.x = x_div + left.getX();
@@ -52,33 +48,12 @@ public class Point {
 //        this.right = right;
     }
 
-//    public Point getLeft() {
-//        return left;
-//    }
-
-    public void setLeft(Point left) {
-        this.left = left;
-    }
-
-//    public Point getRight() {
-//        return right;
-//    }
-
-
-    public void setRight(Point right) {
-        this.right = right;
-    }
-
     public double getX() {
         return x;
     }
 
     public double getY() {
         return y;
-    }
-
-    public boolean isFixed() {
-        return isFixed;
     }
 
     public double getkP() {
@@ -94,18 +69,11 @@ public class Point {
     }
 
     public double getRelativeX() {
-        return relativeX;
-    }
-
-    public void setRelativeX(double relativeX) {
-        this.relativeX = relativeX;
+        return (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
     }
 
     public double getRelativeY() {
-        return relativeY;
+        return (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
     }
 
-    public void setRelativeY(double relativeY) {
-        this.relativeY = relativeY;
-    }
 }

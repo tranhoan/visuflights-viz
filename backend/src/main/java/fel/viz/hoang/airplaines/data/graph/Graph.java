@@ -17,8 +17,8 @@ import org.w3c.dom.NodeList;
 public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
-    public static final double K = 0.005;
-    private static final double COMPABILITY_THRESHOLD = 0.001, COMPABILITY_MULTIPLIER = 5;
+    public static final double K = 0.01;
+    private static final double COMPABILITY_THRESHOLD = 0.003;
 
     public static double maxX, maxY;
 
@@ -64,10 +64,6 @@ public class Graph {
             right = new Point(flights[i], 1);
             flights[i].addPoint(right);
 
-            left.setLeft(null);
-            left.setRight(right);
-            right.setLeft(left);
-            right.setRight(null);
         }
 
     }
@@ -166,8 +162,8 @@ public class Graph {
                         q = flights[j].getPoints().get(flights[j].getPoints().size() - i);
                     }
 
-                    direction[0] = p.getkP() * (left.getX() - p.getX()) + p.getkP() * (p.getX() - right.getX()) + (matrix[index][j] * COMPABILITY_MULTIPLIER / (p.getX() - q.getX()));
-                    direction[1] = p.getkP() * (left.getY() - p.getY()) + p.getkP() * (p.getY() - right.getY()) + (matrix[index][j] * COMPABILITY_MULTIPLIER / (p.getY() - q.getY()));
+                    direction[0] = p.getkP() * (left.getX() - p.getX()) + p.getkP() * (p.getX() - right.getX()) + (matrix[index][j] * vectorSize(p, q) / (p.getX() - q.getX()));
+                    direction[1] = p.getkP() * (left.getY() - p.getY()) + p.getkP() * (p.getY() - right.getY()) + (matrix[index][j] * vectorSize(p, q) / (p.getY() - q.getY()));
 
                     if (Math.abs(maxX) < Math.abs(direction[0])) {
                         maxX = direction[0];
