@@ -175,11 +175,11 @@ public class Graph {
                             (matrix[index][j]  / (p.getY() - q.getY()));
                      */
 
-                    direction[0] = (p.getkP() * (left.getX() - p.getX())
-                            + p.getkP() * (p.getX() - right.getX())
+                    direction[0] = (p.getkP() * (p.getX() - left.getX())
+                            + p.getkP() * (right.getX() - p.getX())
                             + (q.getX() - p.getX())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
-                    direction[1] = (p.getkP() * (left.getY() - p.getY())
-                            + p.getkP() * (p.getY() - right.getY())
+                    direction[1] = (p.getkP() * (p.getY() - left.getY())
+                            + p.getkP() * (right.getY() - p.getY())
                             + (q.getY() - p.getY())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
 
                     double distanceToQ = vectorSize(p, q);
