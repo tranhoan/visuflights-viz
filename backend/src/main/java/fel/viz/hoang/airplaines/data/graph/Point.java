@@ -12,7 +12,8 @@ package fel.viz.hoang.airplaines.data.graph;
 public class Point {
 
     static final double X_UPPER_BOUND = -688.16667, X_LOWER_BOUND = -1242.5, Y_UPPER_BOUND = -245.5, Y_LOWER_BOUND = -488.0;
-    private double x, y, kP, relativeX, relativeY;
+    private double x, y, kP;
+    private boolean isFixed;
 
     /**
      * Use only for creation of the first two points of any line (the two broder
@@ -22,6 +23,7 @@ public class Point {
      * @param number
      */
     public Point(Flight flight, int number) {
+        isFixed = true;
         if (number == 0) {
             this.x = flight.getSource().getX();
             this.y = flight.getSource().getY();
@@ -29,19 +31,16 @@ public class Point {
             this.x = flight.getTarget().getX();
             this.y = flight.getTarget().getY();
         }
-        this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
-        this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
         this.kP = Graph.K / Math.sqrt(Math.pow(flight.getTarget().getX() - flight.getSource().getX(), 2) + Math.pow(flight.getTarget().getY() - flight.getSource().getY(), 2));
     }
 
-    public Point(Flight fligth, Point left, Point right) {
+    public Point(Flight fligth, Point left, Point right, int iteration) {
+        isFixed = false;
         double x_div = (right.getX() - left.getX()) / 2;
         double y_div = (right.getY() - left.getY()) / 2;
         this.x = x_div + left.getX();
         this.y = y_div + left.getY();
-        this.kP = left.kP;
-        this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
-        this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
+        this.kP = fligth.getPoints().get(0).getkP()*iteration;
 //        left.setRight(this);
 //        right.setLeft(this);
 //        this.left = left;
@@ -74,6 +73,14 @@ public class Point {
 
     public double getRelativeY() {
         return (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
+    }
+    
+    public boolean isFixed(){
+        return isFixed;
+    }
+    
+    public void fixIt(){
+        isFixed = true;
     }
 
 }

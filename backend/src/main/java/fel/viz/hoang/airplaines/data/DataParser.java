@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import javax.xml.parsers.*;
 
 import fel.viz.hoang.airplaines.data.graph.Graph;
+import fel.viz.hoang.airplaines.data.graph.Point;
+import java.io.FileWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -40,7 +42,26 @@ public class DataParser {
             
             
             gr.bundleEdges();
+            
+            /*
+            FileWriter writer = new FileWriter("lines.csv");
+            double x, y;
+            int scale = 2;
+            for (int i = 0; i < gr.getFlights()[0].getPoints().size(); i++) {
+                for (int j = 0; j < 20 ; j++) {
+                    x = Math.round(gr.getFlights()[j].getPoints().get(i).getX() * Math.pow(10, scale)) / Math.pow(10, scale);
+                    y = Math.round(gr.getFlights()[j].getPoints().get(i).getY() * Math.pow(10, scale)) / Math.pow(10, scale);
+                    writer.append(x + ";" + y + ";");
+                }
+                writer.append("\n");
+                writer.flush();
+            }
+            writer.close();
+            */
+            
             graph = gr;
+            
+            
 
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataParser.class.getName()).log(Level.SEVERE, null, ex);

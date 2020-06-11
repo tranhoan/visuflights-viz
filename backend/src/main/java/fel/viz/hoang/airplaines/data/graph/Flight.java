@@ -28,6 +28,7 @@ public class Flight {
     public Airport getSource() {
         return source;
     }
+
     @JsonIgnore
     public Airport getTarget() {
         return target;
@@ -41,13 +42,13 @@ public class Flight {
         this.points.add(point);
     }
 
-    public void doubleEdges() {
+    public void doubleEdges(int iteration) {
         Point[] newPoints = new Point[points.size() - 1];
         for (int i = 0; i < newPoints.length; i++) {
-            newPoints[i] = new Point(this, points.get(i), points.get(i + 1));
+            newPoints[i] = new Point(this, points.get(i), points.get(i + 1), iteration);
         }
-        for (int i = newPoints.length - 1; i >= 0; i--) {
-            points.add(i+1, newPoints[i]);
+        for (int i = 0; i < newPoints.length; i++) {
+            points.add((i*2) + 1, newPoints[i]);
         }
     }
 

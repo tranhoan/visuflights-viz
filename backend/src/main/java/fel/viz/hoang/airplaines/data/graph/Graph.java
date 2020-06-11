@@ -18,9 +18,9 @@ public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
     public static final double K = 0.1;
-    private static final double COMPABILITY_THRESHOLD = 0.005;
+    private static final double COMPABILITY_THRESHOLD = 0.0015, COMPABILITY_MULTIPLIER = 400;
 
-    public static double maxX, maxY;
+    public static double maxX, maxY, sumX, sumY, counter;
 
     private Airport[] airports;
     private Flight[] flights;
@@ -71,16 +71,19 @@ public class Graph {
     public void bundleEdges() {
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
             for (Flight flight : flights) {
-                flight.doubleEdges();
+                flight.doubleEdges(i + 1);
             }
             double[][] matrix = getCompabilityMatrix();
 
             for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
-                movePointsOfTwoEdges(flights[j], j, matrix);
+                movePointsOfTwoEdges(flights[j], j, matrix, i + 1);
             }
-            System.out.println("Iteration " + (i + 1) + " max divergence: " + maxX + " " + maxY);
+            System.out.println("Iteration " + (i + 1) + " max divergence: " + Math.round(maxX) + " " + Math.round(maxY) + " average divergence: " + Math.round(sumX / counter) + " " + Math.round(sumY / counter) + " of " + counter);
             maxX = 0;
             maxY = 0;
+            sumX = 0;
+            sumY = 0;
+            counter = 0;
         }
     }
 
@@ -134,7 +137,7 @@ public class Graph {
                     vPQ = Math.max((1 - (2 * (Math.sqrt(Math.pow(iM[0] - pPoint.getX(), 2) + Math.pow(iM[1] - pPoint.getY(), 2)))) / Math.sqrt(Math.pow(i1[0] - i0[0], 2) + Math.pow(i1[1] - i0[1], 2))), 0);
                     vQP = Math.max((1 - (2 * (Math.sqrt(Math.pow(iM[0] - qPoint.getX(), 2) + Math.pow(iM[1] - qPoint.getY(), 2)))) / Math.sqrt(Math.pow(i1[0] - i0[0], 2) + Math.pow(i1[1] - i0[1], 2))), 0);
                     cVisibility = Math.min(vPQ, vQP);
-                    */
+                     */
                     matrix[i][j] = cAngle * cScale * cPosition /* cVisibility*/;
                 } else {
                     matrix[i][j] = 0;
@@ -144,13 +147,13 @@ public class Graph {
         return matrix;
     }
 
-    private void movePointsOfTwoEdges(Flight flight, int index, double[][] matrix) {
+    private void movePointsOfTwoEdges(Flight flight, int index, double[][] matrix, int iteration) {
         double[] direction = new double[2];
         double sourceToSourceDistance = 0, sourceToTargetDistance = 0, targetToSourceDistance = 0, targetToTargetDistance = 0;
         Point p = null, q = null, left = null, right = null;
         for (int i = 1; i < flight.getPoints().size() - 1; i++) {
             for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
-                if (i != j && matrix[index][j] >= COMPABILITY_THRESHOLD) {
+                if (!flight.getPoints().get(i).isFixed() && i != j && matrix[index][j] >= COMPABILITY_THRESHOLD * iteration) {
                     sourceToSourceDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(0));
                     sourceToTargetDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(flights[j].getPoints().size() - 1));
                     targetToSourceDistance = vectorSize(flight.getPoints().get(flight.getPoints().size() - 1), flights[j].getPoints().get(0));
@@ -163,9 +166,28 @@ public class Graph {
                     } else {
                         q = flights[j].getPoints().get(flights[j].getPoints().size() - i);
                     }
+                    /*
+                    direction[0] = p.getkP() * (left.getX() - p.getX()) +
+                            p.getkP() * (p.getX() - right.getX()) +
+                            (matrix[index][j] / (p.getX() - q.getX()));
+                    direction[1] = p.getkP() * (left.getY() - p.getY()) +
+                            p.getkP() * (p.getY() - right.getY()) +
+                            (matrix[index][j]  / (p.getY() - q.getY()));
+                     */
 
-                    direction[0] = p.getkP() * (left.getX() - p.getX()) + p.getkP() * (p.getX() - right.getX()) + (matrix[index][j] * vectorSize(p, q) / (p.getX() - q.getX()));
-                    direction[1] = p.getkP() * (left.getY() - p.getY()) + p.getkP() * (p.getY() - right.getY()) + (matrix[index][j] * vectorSize(p, q) / (p.getY() - q.getY()));
+                    direction[0] = (p.getkP() * (left.getX() - p.getX())
+                            + p.getkP() * (p.getX() - right.getX())
+                            + (p.getX() - q.getX())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
+                    direction[1] = (p.getkP() * (left.getY() - p.getY())
+                            + p.getkP() * (p.getY() - right.getY())
+                            + (p.getY() - q.getY())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
+
+                    double distanceToQ = vectorSize(p, q);
+                    double distaceFromPtoNewP = vectorSize(p, p.getX() + direction[0], p.getY() + direction[1]);
+                    if (distaceFromPtoNewP > distanceToQ) {
+                        direction[0] = direction[0] * (distanceToQ / distaceFromPtoNewP);
+                        direction[1] = direction[1] * (distanceToQ / distaceFromPtoNewP);
+                    }
 
                     if (Math.abs(maxX) < Math.abs(direction[0])) {
                         maxX = direction[0];
@@ -173,8 +195,12 @@ public class Graph {
                     if (Math.abs(maxY) < Math.abs(direction[1])) {
                         maxY = direction[1];
                     }
+                    sumX += Math.abs(direction[0]);
+                    sumY += Math.abs(direction[1]);
+                    counter++;
 
                     //System.out.println(p.getX() + " -> " + direction[0] + " | " + p.getY() + " -> " + direction[1]);
+                    p.fixIt();
                     p.setX(p.getX() + direction[0]);
                     p.setY(p.getY() + direction[1]);
 
@@ -218,7 +244,15 @@ public class Graph {
         return airports;
     }
 
+    public Flight[] getFlights() {
+        return flights;
+    }
+
     private double vectorSize(Point a, Point b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
+    }
+
+    private double vectorSize(Point a, double xB, double yB) {
+        return Math.sqrt(Math.pow(a.getX() - xB, 2) + Math.pow(a.getY() - yB, 2));
     }
 }
