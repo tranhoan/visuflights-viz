@@ -17,8 +17,9 @@ import org.w3c.dom.NodeList;
 public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
-    public static final double K = 0.1;
+    public static final double K = 0.05;
     private static double COMPABILITY_THRESHOLD = 0.001;
+    public static double maxChange = 0, maxFp = 0, currentPush = 0, currentDiv = 0;
 
     private Airport[] airports;
     private Flight[] flights;
@@ -149,7 +150,6 @@ public class Graph {
             sum = 0;
             direction = new double[2];
             leftDist = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - p.getPoints().get(i - 1).getX(), 2) + Math.pow(p.getPoints().get(i).getY() - p.getPoints().get(i - 1).getY(), 2));
-
             rightDist = Math.sqrt(Math.pow(p.getPoints().get(i + 1).getX() - p.getPoints().get(i).getX(), 2) + Math.pow(p.getPoints().get(i + 1).getY() - p.getPoints().get(i).getY(), 2));
             for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
                 if (j != index && matrix[index][j] >= COMPABILITY_THRESHOLD) {
@@ -159,8 +159,18 @@ public class Graph {
                 }
             }
             fP = (p.getPoints().get(i).getkP() * (leftDist + rightDist)) + sum;
-            p.getPoints().get(i).setX(p.getPoints().get(i).getX() + fP * direction[0]);
-            p.getPoints().get(i).setY(p.getPoints().get(i).getY() + fP * direction[1]);
+            double changeX = p.getPoints().get(i).getX() + fP/10*direction[0];
+            double changeY = p.getPoints().get(i).getY() + fP/10*direction[1];
+            double changeDistance = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - changeX, 2) + Math.pow(p.getPoints().get(i).getY() - changeY, 2));
+            if (maxChange < changeDistance) {
+                maxChange = changeDistance;
+                maxFp = fP;
+                currentPush = (p.getPoints().get(i).getkP() * (leftDist + rightDist));
+                currentDiv = sum;
+            }
+            //System.out.println("Point " + index + " - fp: " + fP + " from [" + p.getPoints().get(i).getX() + ", " + p.getPoints().get(i).getY() + "] to [" + changeX + ", " + changeY + "] by " + changeDistance);
+            p.getPoints().get(i).setX(changeX);
+            p.getPoints().get(i).setY(changeY);
         }
     }
 

@@ -46,6 +46,10 @@ public class Point {
         this.kP = left.kP;
         this.relativeX = (this.x - X_LOWER_BOUND)/(X_UPPER_BOUND - X_LOWER_BOUND);
         this.relativeY = (this.y - Y_LOWER_BOUND)/(Y_UPPER_BOUND - Y_LOWER_BOUND);
+//        left.setRight(this);
+//        right.setLeft(this);
+//        this.left = left;
+//        this.right = right;
     }
 
 //    public Point getLeft() {

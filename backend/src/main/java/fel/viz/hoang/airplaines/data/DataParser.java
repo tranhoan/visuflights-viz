@@ -37,7 +37,11 @@ public class DataParser {
             Document doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
             Graph gr = new Graph(doc);
+            
+            
             gr.bundleEdges();
+            System.out.println("");
+            System.out.println("MAX CHANGE "+ Graph.maxChange + " by force " + Graph.maxFp + " (" + Graph.currentPush + ", " + Graph.currentDiv + ")");
             graph = gr;
 
         } catch (ParserConfigurationException ex) {
