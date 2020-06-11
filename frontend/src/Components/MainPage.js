@@ -71,8 +71,18 @@ function MainPage() {
         let p1 = airportRef[0].current.getBoundingClientRect()
         let p2 = airportRef[136].current.getBoundingClientRect()
         // bzCurve(airports[0].departures[0].points, 0.3, 1, c)
-        airports.forEach((a) => {
-            a.departures.map((d) => bzCurve(d.points, 0.5, 1, c))
+        // airports.forEach((a) => {
+        //     a.departures.map((d) => bzCurve(d.points, 0.5, 1, c))
+        // })
+        airports.forEach((a, ai) => {
+            if (ai%10==0) {
+                a.departures.map((d,di) => { 
+                    if (di==0) {
+                        // bzCurve(d.points, 0.5, 1, c)
+                        drawPoints(d.points, c)
+                    }
+                })
+            }
         })
     }
 
@@ -90,6 +100,14 @@ function MainPage() {
 
     const gradient = (a,b) => {
         return (calculateViewportY(b.relativeY)-calculateViewportY(a.relativeY))/(calculateViewportX(b.relativeX)-calculateViewportX(a.relativeX)); 
+    }
+    
+    const drawPoints = (points, ctx) => {
+        points.forEach((p) => {
+            const cx = calculateViewportX(p.relativeX)
+            const cy = calculateViewportY(p.relativeY)
+            ctx.fillRect(cx, cy, 4, 4)
+        })
     }
 
     const bzCurve = (points, f, t, ctx) => {
@@ -134,6 +152,7 @@ function MainPage() {
             dy1 = dy2; 
             preP = curP; 
         } 
+        ctx.strokeStyle = "#FFBC65";
         ctx.stroke(); 
     } 
 
