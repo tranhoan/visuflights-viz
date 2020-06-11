@@ -18,7 +18,7 @@ public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
     public static final double K = 0.1;
-    private static final double COMPABILITY_THRESHOLD = 0.0015, COMPABILITY_MULTIPLIER = 400;
+    private static final double COMPABILITY_THRESHOLD = 0.00002, COMPABILITY_MULTIPLIER = 500, MAXIMUM_CHANGE = 0.95;
 
     public static double maxX, maxY, sumX, sumY, counter;
 
@@ -73,10 +73,9 @@ public class Graph {
             for (Flight flight : flights) {
                 flight.doubleEdges(i + 1);
             }
-            double[][] matrix = getCompabilityMatrix();
-
+            double[][] compabilityMatrix = getCompabilityMatrix();
             for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
-                movePointsOfTwoEdges(flights[j], j, matrix, i + 1);
+                movePointsOfTwoEdges(flights[j], j, compabilityMatrix, i + 1);
             }
             System.out.println("Iteration " + (i + 1) + " max divergence: " + Math.round(maxX) + " " + Math.round(maxY) + " average divergence: " + Math.round(sumX / counter) + " " + Math.round(sumY / counter) + " of " + counter);
             maxX = 0;
@@ -88,7 +87,7 @@ public class Graph {
     }
 
     private double[][] getCompabilityMatrix() {
-        double[][] matrix = new double[NUMBER_OF_FLIGHTS][NUMBER_OF_FLIGHTS];
+        double[][] matrix = new double[NUMBER_OF_FLIGHTS][2];
         double cAngle, cScale, cPosition/*, cVisibility*/;
         double[] p = new double[2], q = new double[2], v = new double[2], i0 = new double[2], i1 = new double[2], iM = new double[2];
         double pSize, qSize, lAvg, distance, a, vPQ, vQP;
@@ -138,106 +137,63 @@ public class Graph {
                     vQP = Math.max((1 - (2 * (Math.sqrt(Math.pow(iM[0] - qPoint.getX(), 2) + Math.pow(iM[1] - qPoint.getY(), 2)))) / Math.sqrt(Math.pow(i1[0] - i0[0], 2) + Math.pow(i1[1] - i0[1], 2))), 0);
                     cVisibility = Math.min(vPQ, vQP);
                      */
-                    matrix[i][j] = cAngle * cScale * cPosition /* cVisibility*/;
-                } else {
-                    matrix[i][j] = 0;
+                    if (matrix[i][1] <= cAngle * cScale * cPosition) {
+                        matrix[i][0] = j;
+                        matrix[i][1] = cAngle * cScale * cPosition /* cVisibility*/;
+                    }
                 }
             }
         }
         return matrix;
     }
 
-    private void movePointsOfTwoEdges(Flight flight, int index, double[][] matrix, int iteration) {
+    private void movePointsOfTwoEdges(Flight flight, int index, double[][] compabilityMatrix, int iteration) {
         double[] direction = new double[2];
-        double sourceToSourceDistance = 0, sourceToTargetDistance = 0, targetToSourceDistance = 0, targetToTargetDistance = 0;
+        double distanceToA = 0, distanceToB = 0;
         Point p = null, q = null, left = null, right = null;
         for (int i = 1; i < flight.getPoints().size() - 1; i++) {
-            for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
-                if (!flight.getPoints().get(i).isFixed() && i != j && matrix[index][j] >= COMPABILITY_THRESHOLD * iteration) {
-                    sourceToSourceDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(0));
-                    sourceToTargetDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(flights[j].getPoints().size() - 1));
-                    targetToSourceDistance = vectorSize(flight.getPoints().get(flight.getPoints().size() - 1), flights[j].getPoints().get(0));
-                    targetToTargetDistance = vectorSize(flight.getPoints().get(flight.getPoints().size() - 1), flights[j].getPoints().get(flights[j].getPoints().size() - 1));
-                    p = flight.getPoints().get(i);
-                    left = flight.getPoints().get(i - 1);
-                    right = flight.getPoints().get(i + 1);
-                    if ((sourceToSourceDistance + targetToTargetDistance) <= (sourceToTargetDistance + targetToSourceDistance)) {
-                        q = flights[j].getPoints().get(i);
-                    } else {
-                        q = flights[j].getPoints().get(flights[j].getPoints().size() - i);
-                    }
-                    /*
-                    direction[0] = p.getkP() * (left.getX() - p.getX()) +
-                            p.getkP() * (p.getX() - right.getX()) +
-                            (matrix[index][j] / (p.getX() - q.getX()));
-                    direction[1] = p.getkP() * (left.getY() - p.getY()) +
-                            p.getkP() * (p.getY() - right.getY()) +
-                            (matrix[index][j]  / (p.getY() - q.getY()));
-                     */
+            final int flightToCompareIndex = (int) compabilityMatrix[index][0];
+            if (compabilityMatrix[index][1] >= COMPABILITY_THRESHOLD * iteration) {
 
-                    direction[0] = (p.getkP() * (p.getX() - left.getX())
-                            + p.getkP() * (right.getX() - p.getX())
-                            + (q.getX() - p.getX())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
-                    direction[1] = (p.getkP() * (p.getY() - left.getY())
-                            + p.getkP() * (right.getY() - p.getY())
-                            + (q.getY() - p.getY())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
-
-                    double distanceToQ = vectorSize(p, q);
-                    double distaceFromPtoNewP = vectorSize(p, p.getX() + direction[0], p.getY() + direction[1]);
-                    if (distaceFromPtoNewP > distanceToQ) {
-                        direction[0] = direction[0] * (distanceToQ / distaceFromPtoNewP);
-                        direction[1] = direction[1] * (distanceToQ / distaceFromPtoNewP);
-                    }
-
-                    if (Math.abs(maxX) < Math.abs(direction[0])) {
-                        maxX = direction[0];
-                    }
-                    if (Math.abs(maxY) < Math.abs(direction[1])) {
-                        maxY = direction[1];
-                    }
-                    sumX += Math.abs(direction[0]);
-                    sumY += Math.abs(direction[1]);
-                    counter++;
-
-                    //System.out.println(p.getX() + " -> " + direction[0] + " | " + p.getY() + " -> " + direction[1]);
-                    p.fixIt();
-                    p.setX(p.getX() + direction[0]);
-                    p.setY(p.getY() + direction[1]);
-
+                p = flight.getPoints().get(i);
+                left = flight.getPoints().get(i - 1);
+                right = flight.getPoints().get(i + 1);
+                distanceToA = vectorSize(p, flights[flightToCompareIndex].getPoints().get(i));
+                distanceToB = vectorSize(p, flights[flightToCompareIndex].getPoints().get(flights[flightToCompareIndex].getPoints().size() - 1 - i));
+                if (distanceToA < distanceToB) {
+                    q = flights[flightToCompareIndex].getPoints().get(i);
+                } else {
+                    q = flights[flightToCompareIndex].getPoints().get(flights[flightToCompareIndex].getPoints().size() - 1 - i);
                 }
+                direction[0] = (p.getkP() * (p.getX() - left.getX())
+                        + p.getkP() * (right.getX() - p.getX())
+                        + (q.getX() - p.getX()) * compabilityMatrix[index][1] * COMPABILITY_MULTIPLIER);
+                direction[1] = (p.getkP() * (p.getY() - left.getY())
+                        + p.getkP() * (right.getY() - p.getY())
+                        + (q.getY() - p.getY()) * compabilityMatrix[index][1] * COMPABILITY_MULTIPLIER);
+
+                double distanceToQ = vectorSize(p, q);
+                double distaceFromPtoNewP = vectorSize(p, p.getX() + direction[0], p.getY() + direction[1]);
+                if (distaceFromPtoNewP > distanceToQ * MAXIMUM_CHANGE) {
+                    direction[0] = direction[0] * (distanceToQ * MAXIMUM_CHANGE / distaceFromPtoNewP);
+                    direction[1] = direction[1] * (distanceToQ * MAXIMUM_CHANGE / distaceFromPtoNewP);
+                }
+
+                if (Math.abs(maxX) < Math.abs(direction[0])) {
+                    maxX = direction[0];
+                }
+                if (Math.abs(maxY) < Math.abs(direction[1])) {
+                    maxY = direction[1];
+                }
+                sumX += Math.abs(direction[0]);
+                sumY += Math.abs(direction[1]);
+                counter++;
+                p.fixIt();
+                p.setX(p.getX() + direction[0]);
+                p.setY(p.getY() + direction[1]);
+
             }
         }
-
-        /* 
-        for (int i = 1; i < p.getPoints().size() - 1; i++) {
-            sum = 0;
-            direction = new double[2];
-            leftDist = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - p.getPoints().get(i - 1).getX(), 2) + Math.pow(p.getPoints().get(i).getY() - p.getPoints().get(i - 1).getY(), 2));
-            rightDist = Math.sqrt(Math.pow(p.getPoints().get(i + 1).getX() - p.getPoints().get(i).getX(), 2) + Math.pow(p.getPoints().get(i + 1).getY() - p.getPoints().get(i).getY(), 2));
-            for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
-                if (j != index && matrix[index][j] >= COMPABILITY_THRESHOLD) {
-                    direction[0] += matrix[index][j] * flights[j].getPoints().get(i).getX() - matrix[index][j] * p.getPoints().get(i).getX();
-                    direction[1] += matrix[index][j] * flights[j].getPoints().get(i).getY() - matrix[index][j] * p.getPoints().get(i).getY();
-                    sum += 1 / Math.sqrt(Math.pow(flights[j].getPoints().get(i).getX() - p.getPoints().get(i).getX(), 2) + Math.pow(flights[j].getPoints().get(i).getY() - p.getPoints().get(i).getY(), 2));
-                }
-            }
-            if (sum > 0) {
-                fP = (p.getPoints().get(i).getkP() * (leftDist + rightDist)) + sum;
-                double changeX = p.getPoints().get(i).getX() + fP / 5 * direction[0];
-                double changeY = p.getPoints().get(i).getY() + fP / 5 * direction[1];
-                double changeDistance = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - changeX, 2) + Math.pow(p.getPoints().get(i).getY() - changeY, 2));
-                if (maxChange < changeDistance) {
-                    maxChange = changeDistance;
-                    maxFp = fP;
-                    currentPush = (p.getPoints().get(i).getkP() * (leftDist + rightDist));
-                    currentDiv = sum;
-                }
-                //System.out.println("Point " + index + " - fp: " + fP + " from [" + p.getPoints().get(i).getX() + ", " + p.getPoints().get(i).getY() + "] to [" + changeX + ", " + changeY + "] by " + changeDistance);
-                p.getPoints().get(i).setX(changeX);
-                p.getPoints().get(i).setY(changeY);
-                changeCounter[currentIteration]++;
-            }
-        }*/
     }
 
     public Airport[] getAirports() {
