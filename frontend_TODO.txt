@@ -1,0 +1,5 @@
+u každého letiště by měl být popisek s jeho zkratkou
+- rozlišení velikosti letištit podle počtu letů a příletů (možné kanály - velikost kruhu letiště, brava letiště na uniformní barevné škále - bude potřeba přidat legendu s barevnou škálou)
+-když se kline na letiště, zvýrazní se ty lety a letiště, které jsou přímo spojené
+	- plus by se mohlo někde zobrazit, jméno letiště, počet příletů, odletů
+	- jinak se zabarvní odlety, jinak přílety
