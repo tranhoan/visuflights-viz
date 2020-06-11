@@ -20,6 +20,9 @@ public class Graph {
     public static final double K = 0.05;
     private static double COMPABILITY_THRESHOLD = 0.001;
     public static double maxChange = 0, maxFp = 0, currentPush = 0, currentDiv = 0;
+    
+    public static int[] changeCounter = new int[NUMBER_OF_ITERATIONS];
+    public static int currentIteration = 0;
 
     private Airport[] airports;
     private Flight[] flights;
@@ -73,7 +76,7 @@ public class Graph {
 
     public void bundleEdges() {
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-
+            currentIteration = i;
             for (Flight flight : flights) {
                 flight.doubleEdges();
             }
@@ -158,19 +161,22 @@ public class Graph {
                     sum += 1 / Math.sqrt(Math.pow(flights[j].getPoints().get(i).getX() - p.getPoints().get(i).getX(), 2) + Math.pow(flights[j].getPoints().get(i).getY() - p.getPoints().get(i).getY(), 2));
                 }
             }
-            fP = (p.getPoints().get(i).getkP() * (leftDist + rightDist)) + sum;
-            double changeX = p.getPoints().get(i).getX() + fP/10*direction[0];
-            double changeY = p.getPoints().get(i).getY() + fP/10*direction[1];
-            double changeDistance = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - changeX, 2) + Math.pow(p.getPoints().get(i).getY() - changeY, 2));
-            if (maxChange < changeDistance) {
-                maxChange = changeDistance;
-                maxFp = fP;
-                currentPush = (p.getPoints().get(i).getkP() * (leftDist + rightDist));
-                currentDiv = sum;
+            if (sum > 0) {
+                fP = (p.getPoints().get(i).getkP() * (leftDist + rightDist)) + sum;
+                double changeX = p.getPoints().get(i).getX() + fP / 5 * direction[0];
+                double changeY = p.getPoints().get(i).getY() + fP / 5 * direction[1];
+                double changeDistance = Math.sqrt(Math.pow(p.getPoints().get(i).getX() - changeX, 2) + Math.pow(p.getPoints().get(i).getY() - changeY, 2));
+                if (maxChange < changeDistance) {
+                    maxChange = changeDistance;
+                    maxFp = fP;
+                    currentPush = (p.getPoints().get(i).getkP() * (leftDist + rightDist));
+                    currentDiv = sum;
+                }
+                //System.out.println("Point " + index + " - fp: " + fP + " from [" + p.getPoints().get(i).getX() + ", " + p.getPoints().get(i).getY() + "] to [" + changeX + ", " + changeY + "] by " + changeDistance);
+                p.getPoints().get(i).setX(changeX);
+                p.getPoints().get(i).setY(changeY);
+                changeCounter[currentIteration]++;
             }
-            //System.out.println("Point " + index + " - fp: " + fP + " from [" + p.getPoints().get(i).getX() + ", " + p.getPoints().get(i).getY() + "] to [" + changeX + ", " + changeY + "] by " + changeDistance);
-            p.getPoints().get(i).setX(changeX);
-            p.getPoints().get(i).setY(changeY);
         }
     }
 

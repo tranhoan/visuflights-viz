@@ -42,6 +42,10 @@ public class DataParser {
             gr.bundleEdges();
             System.out.println("");
             System.out.println("MAX CHANGE "+ Graph.maxChange + " by force " + Graph.maxFp + " (" + Graph.currentPush + ", " + Graph.currentDiv + ")");
+            for (int i = 0; i < Graph.changeCounter.length; i++) {
+                System.out.print("it"+i+" "+Graph.changeCounter[i]+" -> ");
+            }
+            System.out.println("");
             graph = gr;
 
         } catch (ParserConfigurationException ex) {
