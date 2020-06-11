@@ -17,12 +17,10 @@ import org.w3c.dom.NodeList;
 public class Graph {
 
     private static final int NUMBER_OF_AIRPORTS = 235, NUMBER_OF_FLIGHTS = 2101, NUMBER_OF_ITERATIONS = 5;
-    public static final double K = 0.05;
-    private static double COMPABILITY_THRESHOLD = 0.001;
-    public static double maxChange = 0, maxFp = 0, currentPush = 0, currentDiv = 0;
-    
-    public static int[] changeCounter = new int[NUMBER_OF_ITERATIONS];
-    public static int currentIteration = 0;
+    public static final double K = 0.005;
+    private static final double COMPABILITY_THRESHOLD = 0.001, COMPABILITY_MULTIPLIER = 5;
+
+    public static double maxX, maxY;
 
     private Airport[] airports;
     private Flight[] flights;
@@ -76,7 +74,6 @@ public class Graph {
 
     public void bundleEdges() {
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-            currentIteration = i;
             for (Flight flight : flights) {
                 flight.doubleEdges();
             }
@@ -85,6 +82,9 @@ public class Graph {
             for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
                 movePointsOfTwoEdges(flights[j], j, matrix);
             }
+            System.out.println("Iteration " + (i + 1) + " max divergence: " + maxX + " " + maxY);
+            maxX = 0;
+            maxY = 0;
         }
     }
 
@@ -146,9 +146,45 @@ public class Graph {
         return matrix;
     }
 
-    private void movePointsOfTwoEdges(Flight p, int index, double[][] matrix) {
-        double fP = 0, leftDist = 0, rightDist = 0, sum = 0;
-        double[] direction;
+    private void movePointsOfTwoEdges(Flight flight, int index, double[][] matrix) {
+        double[] direction = new double[2];
+        double sourceToSourceDistance = 0, sourceToTargetDistance = 0, targetToSourceDistance = 0, targetToTargetDistance = 0;
+        Point p = null, q = null, left = null, right = null;
+        for (int i = 1; i < flight.getPoints().size() - 1; i++) {
+            for (int j = 0; j < NUMBER_OF_FLIGHTS; j++) {
+                if (i != j && matrix[index][j] >= COMPABILITY_THRESHOLD) {
+                    sourceToSourceDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(0));
+                    sourceToTargetDistance = vectorSize(flight.getPoints().get(0), flights[j].getPoints().get(flights[j].getPoints().size() - 1));
+                    targetToSourceDistance = vectorSize(flight.getPoints().get(flight.getPoints().size() - 1), flights[j].getPoints().get(0));
+                    targetToTargetDistance = vectorSize(flight.getPoints().get(flight.getPoints().size() - 1), flights[j].getPoints().get(flights[j].getPoints().size() - 1));
+                    p = flight.getPoints().get(i);
+                    left = flight.getPoints().get(i - 1);
+                    right = flight.getPoints().get(i + 1);
+                    if ((sourceToSourceDistance + targetToTargetDistance) <= (sourceToTargetDistance + targetToSourceDistance)) {
+                        q = flights[j].getPoints().get(i);
+                    } else {
+                        q = flights[j].getPoints().get(flights[j].getPoints().size() - i);
+                    }
+
+                    direction[0] = p.getkP() * (left.getX() - p.getX()) + p.getkP() * (p.getX() - right.getX()) + (matrix[index][j] * COMPABILITY_MULTIPLIER / (p.getX() - q.getX()));
+                    direction[1] = p.getkP() * (left.getY() - p.getY()) + p.getkP() * (p.getY() - right.getY()) + (matrix[index][j] * COMPABILITY_MULTIPLIER / (p.getY() - q.getY()));
+
+                    if (Math.abs(maxX) < Math.abs(direction[0])) {
+                        maxX = direction[0];
+                    }
+                    if (Math.abs(maxY) < Math.abs(direction[1])) {
+                        maxY = direction[1];
+                    }
+
+                    //System.out.println(p.getX() + " -> " + direction[0] + " | " + p.getY() + " -> " + direction[1]);
+                    p.setX(p.getX() + direction[0]);
+                    p.setY(p.getY() + direction[1]);
+
+                }
+            }
+        }
+
+        /* 
         for (int i = 1; i < p.getPoints().size() - 1; i++) {
             sum = 0;
             direction = new double[2];
@@ -177,10 +213,14 @@ public class Graph {
                 p.getPoints().get(i).setY(changeY);
                 changeCounter[currentIteration]++;
             }
-        }
+        }*/
     }
 
     public Airport[] getAirports() {
         return airports;
+    }
+
+    private double vectorSize(Point a, Point b) {
+        return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }
 }
