@@ -177,10 +177,10 @@ public class Graph {
 
                     direction[0] = (p.getkP() * (left.getX() - p.getX())
                             + p.getkP() * (p.getX() - right.getX())
-                            + (p.getX() - q.getX())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
+                            + (q.getX() - p.getX())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
                     direction[1] = (p.getkP() * (left.getY() - p.getY())
                             + p.getkP() * (p.getY() - right.getY())
-                            + (p.getY() - q.getY())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
+                            + (q.getY() - p.getY())) * matrix[index][j] * COMPABILITY_MULTIPLIER / iteration;
 
                     double distanceToQ = vectorSize(p, q);
                     double distaceFromPtoNewP = vectorSize(p, p.getX() + direction[0], p.getY() + direction[1]);
