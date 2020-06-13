@@ -122,6 +122,22 @@ html body .content .map-wrapper .point-wrapper .ap {
           animation: animate 1s;
 }
 
+html body .content .map-wrapper .point-wrapper .ap.initial-active {
+  opacity: 1;
+}
+
+html body .content .map-wrapper .point-wrapper .ap.active {
+  opacity: 1 !important;
+  -webkit-transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+  transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+}
+
+html body .content .map-wrapper .point-wrapper .ap.not-active {
+  opacity: 0.2 !important;
+  -webkit-transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+  transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+}
+
 html body .content .map-wrapper .point-wrapper .ap.ontop {
   z-index: 20 !important;
 }

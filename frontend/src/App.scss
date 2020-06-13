@@ -94,6 +94,20 @@ html {
                         cursor: pointer;
                         animation: animate 1s;
 
+                        &.initial-active {
+                            opacity: 1;
+                        }
+                        
+                        &.active {
+                            opacity: 1 !important;
+                            transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+                        }
+
+                        &.not-active {
+                            opacity: 0.2 !important;
+                            transition: opacity 0.3s ease-in-out, z-index 0.5s ease-in-out 1ms !important;
+                        }
+
                         &.ontop {
                             z-index: 20 !important;
                         }

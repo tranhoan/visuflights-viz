@@ -10,6 +10,7 @@ function MainPage() {
     let [yUpperBound, setYUpperBound] = useState(0)
     let [yLowerBound, setYLowerBound] = useState(0)
     let [airports, setAirports] = useState([])
+    let [isActive, setActive] = useState([])
     const xLowerRef = useRef()
     const xUpperRef = useRef()
     const yUpperRef = useRef()
@@ -23,6 +24,9 @@ function MainPage() {
     useTransform(yUpperBound, yUpperRef)
     useTransform(yLowerBound, yLowerRef)
 
+
+    useEffect(() => {
+    }, [isActive])
     useEffect(() => {
         axios.get('http://localhost:8080/data')
             .then(
@@ -38,6 +42,7 @@ function MainPage() {
         setAirportRef(oldRef => (
             Array(airports.length).fill().map((e, i) => oldRef[i] || createRef())
         ))
+        setActive(Array(airports.length).fill(-1))
     }, [airports])
 
     useEffect(() => {
@@ -47,23 +52,20 @@ function MainPage() {
             // if (index==0 || airports[0].departures[0].points[airports[0].departures[0].points.length-1].x == airport.x) {
             let el = airportRef[index].current
             let scale = getAirportLevel(airport.airportSize)
-            el.style.transition = `opacity 0.5s ease-in-out ${delay}ms, z-index 0.5s ease-in-out 1ms, width 0.3s ease-in-out ${delay}ms, height 0.3s ease-in-out ${delay}ms`
+            el.style.transition = `opacity 0.6s ease-in-out ${delay}ms, z-index 0.5s ease-in-out 1ms, width 0.6s ease-in-out ${delay}ms, height 0.6s ease-in-out ${delay}ms`
             el.style.width = `${scale}rem`
             el.style.height = `${scale}rem`
             let wh = parseInt(getComputedStyle(document.documentElement).fontSize)*scale + 6
-            console.log(wh/2)
-            console.log(el.offsetWidth)
             if(scale < 3) {
                 el.style.zIndex = 8;
             }
             const cx = calculateViewportX(airport.relativeX) - (wh / 2)
             const cy = calculateViewportY(airport.relativeY) - (wh / 2)
             el.style.transform = `translate3d(${cx}px, ${cy}px,0)`
-            el.style.opacity = 1;
+            el.classList.add('initial-active')
             delay += 2.8
             // }
         })
-        console.log(levels)
     }, [xLowerBound, xUpperBound, yLowerBound, yUpperBound, airportRef])
 
 
@@ -72,9 +74,6 @@ function MainPage() {
         canvas.current.width = window.innerWidth
         if (airportRef.length != 0) {
             let c = canvas.current.getContext('2d')
-            let p1 = airportRef[0].current.getBoundingClientRect()
-            let p2 = airportRef[136].current.getBoundingClientRect()
-            // bzCurve(airports[0].departures[0].points, 0, 0, c)
             // let start = null
             // Clear canvas
             // c.clearRect(0, 0, c.canvas.width, c.canvas.height);
@@ -177,8 +176,19 @@ function MainPage() {
         ctx.closePath();
     }
 
+    const changeActive = (newValue, index, isHover) => {
+        setActive(newValue)
+        let c = canvas.current.getContext('2d')
+        const {x,y} = airportRef[index].current.getBoundingClientRect()
+        const dimension = airportRef[index].current.offsetHeight; 
+        // console.log(x+(dimension/2), y+(dimension/2))
+        if (c.isPointInStroke(775,449)) {
+            console.log("line")
+        }
+    }
+
     const ap = airports.map((item, index) => (
-        <Point key={index} ref={airportRef[index]} latitude={(-airports[index].y / 10).toFixed(5)} longtitude={(airports[index].x / 10).toFixed(5)} abbr={airports[index].abbreviation} />
+        <Point isActive={isActive[index]} i={index} len={airports.length} changeActive={changeActive} key={index} ref={airportRef[index]} latitude={(-airports[index].y / 10).toFixed(5)} longtitude={(airports[index].x / 10).toFixed(5)} abbr={airports[index].abbreviation} />
     ))
     return (
         <React.Fragment>
