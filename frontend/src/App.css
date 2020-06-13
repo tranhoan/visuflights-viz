@@ -3,16 +3,16 @@ html {
 }
 
 html body {
-  background: #28282D;
+  background-image: -webkit-gradient(linear, left top, right bottom, from(#7A8CFC), to(#6473CF));
+  background-image: linear-gradient(to bottom right, #7A8CFC, #6473CF);
   margin: 0;
-  font-family: 'Mongolian Baiti',sans-serif;
+  font-family: 'Raleway',sans-serif;
   letter-spacing: 3px;
 }
 
 html body header {
-  padding: 1.5rem 0 2rem;
+  padding: 2rem 0 2rem;
   width: 100%;
-  height: 2rem;
   opacity: 1;
   font-size: 1.1rem;
   color: #E8E8E8;
@@ -29,7 +29,7 @@ html body header {
 
 html body header .logo {
   margin-left: 81px;
-  height: 2.7rem;
+  height: 4.2rem;
 }
 
 html body header .right-column {
@@ -39,8 +39,19 @@ html body header .right-column {
   margin-right: 81px;
 }
 
-html body header .right-column div {
-  padding-left: 90px;
+html body header .right-column .menu-item {
+  padding-left: 5rem;
+}
+
+html body header .right-column .map-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+html body header .right-column .map-menu .far {
+  margin-right: 0.8rem;
+  font-size: 1.4rem;
 }
 
 html body .content {
@@ -72,33 +83,120 @@ html body .content .map-wrapper {
 
 html body .content .map-wrapper .svg {
   position: absolute;
-  fill: #28282D;
-  fill-opacity: 0;
+  fill-opacity: 0.7;
+  opacity: 0.7;
   color: white;
-  -webkit-filter: invert(65%) sepia(0%) saturate(432%) hue-rotate(139deg) brightness(90%) contrast(90%);
-          filter: invert(65%) sepia(0%) saturate(432%) hue-rotate(139deg) brightness(90%) contrast(90%);
 }
 
 html body .content .map-wrapper .svg path {
-  fill: black;
+  fill: #F5F5F5;
   stroke-width: 0.6;
-  stroke: #929292;
+  -webkit-filter: url(#f3);
+          filter: url(#f3);
 }
 
-html body .content .map-wrapper .ap {
-  width: .8rem;
-  height: .8rem;
+html body .content .map-wrapper .point-wrapper {
+  position: absolute;
+}
+
+html body .content .map-wrapper .point-wrapper .ap {
+  height: 0;
+  width: 0;
   border-radius: 50px;
-  background: #FAFF81;
-  border: none;
-  -webkit-box-shadow: 0 0 15px #FAFF81;
-          box-shadow: 0 0 15px #FAFF81;
+  background: #485BFF;
+  border: 3px solid white;
   -webkit-transition: opacity 0.5s ease-in-out;
   transition: opacity 0.5s ease-in-out;
+  transform: scale(0);
   -webkit-transform: scale(0);
-          transform: scale(0);
   opacity: 0;
   z-index: 3;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  cursor: pointer;
+  -webkit-animation: animate 1s;
+          animation: animate 1s;
+}
+
+html body .content .map-wrapper .point-wrapper .ap.ontop {
+  z-index: 20 !important;
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip {
+  position: absolute;
+  width: 10vw;
+  bottom: calc(100% + 1rem);
+  border-radius: 10px;
+  letter-spacing: 1px;
+  background: white;
+  -webkit-box-shadow: 1px 3px 11px rgba(0, 0, 0, 0.25);
+          box-shadow: 1px 3px 11px rgba(0, 0, 0, 0.25);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  transition: transform 0.36s cubic-bezier(0.77, 0, 0.175, 1) 0.15s, -webkit-transform 0.36s cubic-bezier(0.77, 0, 0.175, 1) 0.15s;
+  -webkit-transform: translateY(70%) scale(0);
+  transform: translateY(70%) scale(0);
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip.visible {
+  -webkit-transform: translateY(0) scale(1);
+          transform: translateY(0) scale(1);
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip .tooltip-description {
+  color: #546CFF;
+  margin: 5% 0 5% 8%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip .tooltip-description .desc {
+  font-size: 0.5rem;
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip .tooltip-description .val {
+  font-size: 1.1rem;
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip .tooltip-description:nth-child(2) {
+  margin-top: 0;
+}
+
+html body .content .map-wrapper .point-wrapper .ap .tooltip .tooltip-name {
+  position: absolute;
+  -webkit-box-shadow: 1px 3px 11px rgba(0, 0, 0, 0.17);
+          box-shadow: 1px 3px 11px rgba(0, 0, 0, 0.17);
+  bottom: 50%;
+  left: 70%;
+  height: 4.5vw;
+  width: 4.5vw;
+  border-radius: 10px;
+  background: #546CFF;
+  color: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 1.1rem;
 }
 
 html body .content .map-wrapper canvas {

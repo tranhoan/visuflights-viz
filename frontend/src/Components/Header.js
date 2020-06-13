@@ -6,8 +6,12 @@ function Header() {
         <header>
             <img src={Logo} className="logo" />
             <div className="right-column">
-                <div> About </div>
-                <div> Contact </div>
+                <div className="map-menu menu-item">
+                    <i className="far fa-map"></i>
+                    <div> Map </div>
+                </div>
+                <div className="menu-item"> About </div>
+                <div className="menu-item"> Contact </div>
             </div>
         </header>
     )
